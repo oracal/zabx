@@ -9,7 +9,9 @@ Example
 ```ruby
 require 'zabx'
 
-api = Zabx::Api.new('http://localhost/zabbix/api_jsonrpc.php', :username => 'Admin', :password => 'zabbix')
+api_address = 'http://localhost/zabbix/api_jsonrpc.php'
+
+api = Zabx::Api.new(api_address, :username => 'Admin', :password => 'zabbix')
 
 api.apiinfo.version
 api.event.get
@@ -22,6 +24,7 @@ api.user.create({
     :usrgrpid => "7"
   }]
 })
+```
 
 License
 =======
