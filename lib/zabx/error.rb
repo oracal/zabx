@@ -2,17 +2,13 @@ module Zabx
   class Error < StandardError; end
 
   class JsonRpcError < Error
-    attr_reader :message, :code, :data
+    attr_reader :code
 
     def initialize(message, code, data = nil)
-      @message = message
+      message = "#{code}: #{message}"
+      message += " #{data}" unless data.nil?
+      super message
       @code = code
-      @data = data
-    end
-
-    def to_s
-      output = "#{code}: #{message}"
-      output += " #{data}" unless data.nil?
     end
   end
 

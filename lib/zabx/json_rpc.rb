@@ -20,7 +20,23 @@ module Zabx
       @options = options
     end
 
-    def single_request(method, args)
+    def invoke(method, args)
+      response = request(method, args)
+      status_code_check(response)
+      parse_response(response.body)
+    end
+
+    def method_missing(method, *args)
+      if args.length == 1 && args[0].is_a?(Hash)
+        invoke(method, args[0])
+      else
+        invoke(method, args)
+      end
+    end
+
+    private
+
+    def request(method, args)
       namespaced_method = @namespace.nil? ? method : "#{@namespace}.#{method}"
       body = @options.merge({
         :jsonrpc => JSON_RPC_VERSION,
@@ -28,14 +44,12 @@ module Zabx
         :params  => args,
         :id      => UUIDTools::UUID.random_create.to_i
       })
-      begin
-        @connection.post @url, body
-      rescue Faraday::ConnectionFailed => exception
-        raise ConnectionError, exception.message
-      end
+      @connection.post @url, body
+    rescue Faraday::ConnectionFailed => exception
+      raise ConnectionError, exception.message
     end
 
-    def single_response(response)
+    def parse_response(response)
       error_check response
       response["result"]
     end
@@ -53,20 +67,6 @@ module Zabx
         raise HttpError, "HTTP client error with status code #{response.status}"
       when 500...600
         raise HttpError, "HTTP server error with status code #{response.status}"
-      end
-    end
-
-    def invoke(method, args)
-      response = single_request(method, args)
-      status_code_check(response)
-      single_response(response.body)
-    end
-
-    def missing_method(method, *args)
-      if args.length == 1 && args[0].is_a?(Hash)
-        invoke(method, args[0])
-      else
-        invoke(method, args)
       end
     end
   end

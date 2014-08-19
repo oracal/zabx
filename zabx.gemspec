@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name         = "zabx"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.author       = "Thomas Whitton"
   s.email        = "mail@thomaswhitton.com"
   s.homepage     = "https://github.com/oracal/zabx"
